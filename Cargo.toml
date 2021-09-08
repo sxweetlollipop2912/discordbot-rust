@@ -1,0 +1,15 @@
+[package]
+name = "discordbot-rust"
+version = "0.1.0"
+authors = ["SxweetLollipop <thaolygoat@gmail.com>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies.serenity]
+version = "0.10.9"
+features = ["framework", "standard_framework", "rustls_backend"]
+
+[dependencies.tokio]
+version = "1.11.0"
+features = ["macros", "rt-multi-thread" ]
