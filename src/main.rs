@@ -59,7 +59,7 @@ impl EventHandler for Handler {
 
 #[tokio::main]
 async fn main() {
-    let token = "ODg0OTk4MzM2NjkwNjU5MzQ4.YTgo7Q.Nx1PzDTkCB1S5di3v2F96cOwjKc";
+    let token = "ODg0OTk4MzM2NjkwNjU5MzQ4.YTgo7Q.CwYmpoPyoy7tyKoOXSc_o44-JgE";
 
     let http = Http::new_with_token(&token);
 
