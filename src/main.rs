@@ -108,11 +108,6 @@ async fn main() {
             // Avoid using this to determine whether a specific command should be
             // executed. Instead, prefer using the `#[check]` macro which
             // gives you this functionality.
-            //
-            // **Note**: Async closures are unstable, you may use them in your
-            // application if you are fine using nightly Rust.
-            // If not, we need to provide the function identifiers to the
-            // hook-functions (before, after, normal, ...).
             .before(before)
             // Similar to `before`, except will be called directly _after_
             // command execution.
