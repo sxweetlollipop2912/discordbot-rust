@@ -1,44 +1,40 @@
-use std::{
-    collections::{HashMap, HashSet},
-    env,
-    fmt::Write,
-    sync::Arc,
-};
-
-use serenity::prelude::*;
 use serenity::{
-    async_trait,
     client::{
-        Client,
         Context,
-        EventHandler,
-        bridge::gateway::{
-            GatewayIntents,
-            ShardId,
-            ShardManager},
     },
     framework::standard::{
-        buckets::{LimitedFor, RevertBucket},
-        help_commands,
-        macros::{check, command, group, help, hook},
-        Args,
-        CommandGroup,
-        CommandOptions,
+        macros::hook,
         CommandResult,
         DispatchError,
-        HelpOptions,
-        Reason,
-        StandardFramework,
     },
-    http::Http,
     model::{
-        channel::{Channel, Message},
-        gateway::Ready,
-        id::UserId,
-        permissions::Permissions,
+        channel::Message,
     },
-    utils::{content_safe, ContentSafeOptions},
 };
+
+use tracing::{debug, error, info};
+
+
+#[hook]
+// instrument will show additional information on all the logs that happen inside the function.
+// This additional information includes the function name, along with all it's arguments
+// formatted with the Debug impl.
+// This additional information will also only be shown if the LOG level is set to `debug`
+#[instrument]
+pub async fn before(_: &Context, msg: &Message, command_name: &str) -> bool {
+    debug!("Got command '{}' by user '{}'", command_name, msg.author.name);
+    true
+}
+
+
+#[hook]
+#[instrument]
+pub async fn after(_ctx: &Context, _msg: &Message, command_name: &str, command_result: CommandResult) {
+    match command_result {
+        Ok(()) => info!("Processed command '{}'.", command_name),
+        Err(why) => error!("Command '{}' returned error {:?}", command_name, why),
+    }
+}
 
 
 #[hook]

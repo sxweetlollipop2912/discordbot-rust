@@ -1,47 +1,28 @@
-use std::{
-    collections::{HashMap, HashSet},
-    env,
-    fmt::Write,
-    sync::Arc,
-};
-
-use serenity::prelude::*;
 use serenity::{
-    async_trait,
     client::{
-        Client,
         Context,
-        EventHandler,
-        bridge::gateway::{
-            GatewayIntents,
-            ShardId,
-            ShardManager},
     },
     framework::standard::{
-        buckets::{LimitedFor, RevertBucket},
-        help_commands,
-        macros::{check, command, group, help, hook},
+        macros::{command, group},
         Args,
-        CommandGroup,
-        CommandOptions,
         CommandResult,
-        DispatchError,
-        HelpOptions,
-        Reason,
-        StandardFramework,
     },
-    http::Http,
     model::{
-        channel::{Channel, Message},
-        gateway::Ready,
-        id::UserId,
+        channel::Message,
         permissions::Permissions,
     },
     utils::{content_safe, ContentSafeOptions},
 };
 
+use tracing::{debug, error, info};
+
 
 #[group]
+// Set a description to appear if a user wants to display a single group
+// e.g. via help using the group-name or one of its prefixes.
+#[description = "A group of general commands."]
+// Summary only appears when listing multiple groups.
+#[summary = "Trivial commands."]
 #[commands(about, am_i_admin, repeat, ping, some_long_command, upper_command)]
 struct General;
 

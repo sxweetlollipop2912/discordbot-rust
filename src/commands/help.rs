@@ -1,43 +1,23 @@
 use std::{
-    collections::{HashMap, HashSet},
-    env,
-    fmt::Write,
-    sync::Arc,
+    collections::HashSet,
 };
 
-use serenity::prelude::*;
 use serenity::{
-    async_trait,
     client::{
-        Client,
         Context,
-        EventHandler,
-        bridge::gateway::{
-            GatewayIntents,
-            ShardId,
-            ShardManager},
     },
     framework::standard::{
-        buckets::{LimitedFor, RevertBucket},
         help_commands,
-        macros::{check, command, group, help, hook},
+        macros::{help},
         Args,
         CommandGroup,
-        CommandOptions,
         CommandResult,
-        DispatchError,
         HelpOptions,
-        Reason,
-        StandardFramework,
     },
-    http::Http,
     model::{
-        channel::{Channel, Message},
-        gateway::Ready,
+        channel::Message,
         id::UserId,
-        permissions::Permissions,
     },
-    utils::{content_safe, ContentSafeOptions},
 };
 
 
@@ -61,7 +41,7 @@ If you want more information about a specific command, just pass the command as 
 // First case is if a user lacks permissions for a command, we can hide the command.
 #[lacking_permissions = "Hide"]
 // If the user is nothing but lacking a certain role, we just display it hence our variant is `Nothing`.
-#[lacking_role = "Nothing"]
+#[lacking_role = "Hide"]
 // The last `enum`-variant is `Strike`, which ~~strikes~~ a command.
 #[wrong_channel = "Strike"]
 // Serenity will automatically analyse and generate a hint/tip explaining the possible
