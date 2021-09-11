@@ -1,5 +1,6 @@
 mod system_fn;
 mod commands;
+mod conf_constants;
 
 use std::{
     collections::HashSet,
@@ -73,8 +74,8 @@ async fn main() {
         .with_max_level(Level::INFO)
         .init();
 
-    let token = "ODg0OTk4MzM2NjkwNjU5MzQ4.YTgo7Q.CwYmpoPyoy7tyKoOXSc_o44-JgE";
-
+    // Token is stored in ./src/conf_constants.rs, under `BOT_TOKEN` constant string
+    let token = BOT_TOKEN;
     let http = Http::new_with_token(&token);
 
     let (owners, bot_id) = match http.get_current_application_info().await {
