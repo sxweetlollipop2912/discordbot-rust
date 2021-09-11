@@ -15,4 +15,7 @@ Cargo.lock
 # Remove log files
 /logs/
 
+# Files with personal/confidential infos
+conf_*
+
 .DS_Store

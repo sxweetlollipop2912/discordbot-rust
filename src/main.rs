@@ -32,7 +32,7 @@ use crate::system_fn::after;
 use crate::conf_constants::BOT_TOKEN;
 use crate::commands::help::GENERAL_HELP;
 use crate::commands::general_group::GENERAL_GROUP;
-use crate::commands::owner_group::OWNER_GROUP;
+use crate::commands::server_mod_group::SERVERMOD_GROUP;
 use crate::commands::emoji_group::EMOJI_GROUP;
 
 
@@ -86,7 +86,7 @@ async fn main() {
     let token = BOT_TOKEN;
     let http = Http::new_with_token(&token);
 
-    let (owners, bot_id) = match http.get_current_application_info().await {
+    let (bot_owners, bot_id) = match http.get_current_application_info().await {
         Ok(info) => {
             let mut owners = HashSet::new();
             if let Some(team) = info.team {
@@ -109,7 +109,7 @@ async fn main() {
             .prefix("^")
             // Sets the bot's owners. These will be used for commands that
             // are owners only.
-            .owners(owners))
+            .owners(bot_owners))
             // Set a function to be called prior to each command execution. This
             // provides the context of the command, the message that was received,
             // and the full name of the command that will be called.
@@ -143,7 +143,7 @@ async fn main() {
             .help(&GENERAL_HELP)
             .group(&GENERAL_GROUP)
             .group(&EMOJI_GROUP)
-            .group(&OWNER_GROUP);
+            .group(&SERVERMOD_GROUP);
 
     let mut client = Client::builder(&token)
         .event_handler(Handler)

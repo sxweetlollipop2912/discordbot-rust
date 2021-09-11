@@ -8,11 +8,11 @@ edition = "2018"
 
 [dependencies.serenity]
 version = "0.10.9"
-features = ["client", "framework", "standard_framework", "rustls_backend"]
+features = ["client", "framework", "standard_framework", "rustls_backend", "cache" ]
 
 [dependencies.tokio]
 version = "1.11.0"
-features = ["macros", "rt-multi-thread" ]
+features = ["macros", "rt-multi-thread", "signal" ]
 
 [dependencies.tracing]
 version = "0.1.26"

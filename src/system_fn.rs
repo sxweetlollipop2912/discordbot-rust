@@ -21,7 +21,7 @@ use tracing::{debug, error, info};
 // formatted with the Debug impl.
 // This additional information will also only be shown if the LOG level is set to `debug`
 #[instrument]
-pub async fn before(_: &Context, msg: &Message, command_name: &str) -> bool {
+pub async fn before(_ctx: &Context, msg: &Message, command_name: &str) -> bool {
     debug!("Got command '{}' by user '{}'", command_name, msg.author.name);
     true
 }
