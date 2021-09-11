@@ -4,13 +4,13 @@ mod conf_constants;
 
 use std::{
     collections::HashSet,
-    env,
+    sync::Arc,
 };
 
 use serenity::prelude::*;
 use serenity::{
     async_trait,
-    client::bridge::gateway::{GatewayIntents},
+    client::bridge::gateway::{GatewayIntents, ShardManager},
     framework::standard::{
         buckets::LimitedFor,
         StandardFramework,
@@ -29,10 +29,18 @@ use crate::system_fn::dispatch_error;
 use crate::system_fn::delay_action;
 use crate::system_fn::before;
 use crate::system_fn::after;
+use crate::conf_constants::BOT_TOKEN;
 use crate::commands::help::GENERAL_HELP;
 use crate::commands::general_group::GENERAL_GROUP;
 use crate::commands::owner_group::OWNER_GROUP;
 use crate::commands::emoji_group::EMOJI_GROUP;
+
+
+pub struct ShardManagerContainer;
+
+impl TypeMapKey for ShardManagerContainer {
+    type Value = Arc<Mutex<ShardManager>>;
+}
 
 
 struct Handler;
@@ -148,11 +156,17 @@ async fn main() {
         .await
         .expect("Error creating client.");
 
-    /*{
+    {
         let mut data = client.data.write().await;
-        data.insert::<CommandCounter>(HashMap::default());
-        data.insert::<ShardManagerContainer>(Arc::clone(&client.shard_manager));
-    }*/
+        data.insert::<ShardManagerContainer>(client.shard_manager.clone());
+    }
+
+    let shard_manager = client.shard_manager.clone();
+
+    tokio::spawn(async move {
+        tokio::signal::ctrl_c().await.expect("Could not register ctrl+c handler");
+        shard_manager.lock().await.shutdown_all().await;
+    });
 
     if let Err(why) = client.start().await {
         error!("Client error: {:?}", why);
