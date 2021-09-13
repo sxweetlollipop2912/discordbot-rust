@@ -16,6 +16,8 @@ use serenity::{
 
 use tracing::{debug, error, info};
 
+use crate::wrapper::check_msg;
+
 
 #[group]
 // Set a description to appear if a user wants to display a single group
@@ -29,7 +31,7 @@ struct General;
 
 #[command]
 async fn about(ctx: &Context, msg: &Message) -> CommandResult {
-    msg.channel_id.say(&ctx.http, "This is a small test-bot! : )").await?;
+    check_msg(msg.channel_id.say(&ctx.http, "This is a small test-bot! : )").await);
     Ok(())
 }
 
@@ -43,12 +45,12 @@ async fn am_i_admin(ctx: &Context, msg: &Message, _args: Args) -> CommandResult 
                 .await
                 .map_or(false, |r| r.has_permission(Permissions::ADMINISTRATOR))
             {
-                msg.channel_id.say(&ctx.http, "Yes, you are.").await?;
+                check_msg(msg.channel_id.say(&ctx.http, "Yes, you are.").await);
                 return Ok(());
             }
         }
     }
-    msg.channel_id.say(&ctx.http, "No, you are not.").await?;
+    check_msg(msg.channel_id.say(&ctx.http, "No, you are not.").await);
     Ok(())
 }
 
@@ -70,7 +72,7 @@ async fn repeat(ctx: &Context, msg: &Message, args: Args) -> CommandResult {
         ContentSafeOptions::default().clean_channel(false).clean_role(false)
     };
     let content = content_safe(&ctx.cache, &args.rest(), &settings).await;
-    msg.channel_id.say(&ctx.http, &content).await?;
+    check_msg(msg.channel_id.say(&ctx.http, &content).await);
     Ok(())
 }
 
@@ -79,14 +81,14 @@ async fn repeat(ctx: &Context, msg: &Message, args: Args) -> CommandResult {
 // Limit command usage to guilds.
 #[only_in(guilds)]
 async fn ping(ctx: &Context, msg: &Message) -> CommandResult {
-    msg.channel_id.say(&ctx.http, "Pong! :)").await?;
+    check_msg(msg.channel_id.say(&ctx.http, "Pong! :)").await);
     Ok(())
 }
 
 
 #[command]
 async fn some_long_command(ctx: &Context, msg: &Message, args: Args) -> CommandResult {
-    msg.channel_id.say(&ctx.http, &format!("Arguments: {:?}", args.rest())).await?;
+    check_msg(msg.channel_id.say(&ctx.http, &format!("Arguments: {:?}", args.rest())).await);
     Ok(())
 }
 
@@ -96,7 +98,7 @@ async fn some_long_command(ctx: &Context, msg: &Message, args: Args) -> CommandR
 #[command("upper")]
 #[sub_commands(sub)]
 async fn upper_command(ctx: &Context, msg: &Message, _args: Args) -> CommandResult {
-    msg.reply(&ctx.http, "This is the main function!").await?;
+    check_msg(msg.reply(&ctx.http, "This is the main function!").await);
     Ok(())
 }
 
@@ -106,6 +108,6 @@ async fn upper_command(ctx: &Context, msg: &Message, _args: Args) -> CommandResu
 #[aliases("sub-command", "secret")]
 #[description("This is `upper`'s sub-command.")]
 async fn sub(ctx: &Context, msg: &Message, _args: Args) -> CommandResult {
-    msg.reply(&ctx.http, "This is a sub function!").await?;
+    check_msg(msg.reply(&ctx.http, "This is a sub function!").await);
     Ok(())
 }

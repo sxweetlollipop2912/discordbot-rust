@@ -14,6 +14,8 @@ use serenity::{
 
 use tracing::{debug, error, info};
 
+use crate::wrapper::check_msg;
+
 
 #[hook]
 // instrument will show additional information on all the logs that happen inside the function.
@@ -39,7 +41,7 @@ pub async fn after(_ctx: &Context, _msg: &Message, command_name: &str, command_r
 
 #[hook]
 pub async fn unknown_command(ctx: &Context, msg: &Message, unknown_command_name: &str) {
-    msg.reply(ctx, &format!("Could not find command named '{}'", unknown_command_name)).await;
+    check_msg(msg.reply(ctx, &format!("Could not find command named '{}'", unknown_command_name)).await);
 }
 
 
@@ -48,10 +50,7 @@ pub async fn dispatch_error(ctx: &Context, msg: &Message, error: DispatchError) 
     if let DispatchError::Ratelimited(info) = error {
         // We notify them only once.
         if info.is_first_try {
-            let _ = msg
-                .channel_id
-                .say(&ctx.http, &format!("Try this again in {} seconds.", info.as_secs()))
-                .await;
+            check_msg(msg.channel_id.say(&ctx.http, &format!("Try this again in {} seconds.", info.as_secs())).await);
         }
     }
 }

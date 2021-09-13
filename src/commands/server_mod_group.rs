@@ -12,6 +12,8 @@ use serenity::{
 
 use tracing::{debug, error, info};
 
+use crate::wrapper::check_msg;
+
 
 #[group]
 // Limit all commands to be guild-restricted.
@@ -51,6 +53,6 @@ async fn slow_mode(ctx: &Context, msg: &Message, mut args: Args) -> CommandResul
         "Failed to find channel in cache.".to_string()
     };
 
-    msg.channel_id.say(&ctx.http, say_content).await?;
+    check_msg(msg.channel_id.say(&ctx.http, say_content).await);
     Ok(())
 }

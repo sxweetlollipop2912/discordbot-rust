@@ -14,6 +14,8 @@ use serenity::{
 
 use tracing::{debug, error, info};
 
+use crate::wrapper::check_msg;
+
 
 #[group]
 // This requires us to call commands in this group
@@ -37,7 +39,7 @@ async fn bird(ctx: &Context, msg: &Message, args: Args) -> CommandResult {
     } else {
         format!(":bird: could not find animal named: `{}`.", args.rest())
     };
-    msg.channel_id.say(&ctx.http, say_content).await?;
+    check_msg(msg.channel_id.say(&ctx.http, say_content).await);
     Ok(())
 }
 
@@ -48,7 +50,7 @@ async fn bird(ctx: &Context, msg: &Message, args: Args) -> CommandResult {
 // Make this command use the "emoji" bucket.
 #[bucket = "emoji"]
 async fn cat(ctx: &Context, msg: &Message) -> CommandResult {
-    msg.channel_id.say(&ctx.http, ":cat:").await?;
+    check_msg(msg.channel_id.say(&ctx.http, ":cat:").await);
     // We can return one ticket to the bucket undoing the ratelimit.
     // Err(RevertBucket.into())
     Ok(())
@@ -59,6 +61,6 @@ async fn cat(ctx: &Context, msg: &Message) -> CommandResult {
 #[description = "Sends an emoji with a dog."]
 #[bucket = "emoji"]
 async fn dog(ctx: &Context, msg: &Message) -> CommandResult {
-    msg.channel_id.say(&ctx.http, ":dog:").await?;
+    check_msg(msg.channel_id.say(&ctx.http, ":dog:").await);
     Ok(())
 }
