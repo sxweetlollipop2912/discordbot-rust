@@ -1,6 +1,7 @@
 mod system_fn;
 mod commands;
 mod conf_constants;
+pub mod wrapper;
 
 use std::{
     collections::HashSet,
@@ -10,7 +11,11 @@ use std::{
 use serenity::prelude::*;
 use serenity::{
     async_trait,
-    client::bridge::gateway::{GatewayIntents, ShardManager},
+    client::{
+        bridge::gateway::{GatewayIntents, ShardManager},
+        Client,
+        EventHandler,
+    },
     framework::standard::{
         buckets::LimitedFor,
         StandardFramework,
@@ -21,6 +26,11 @@ use serenity::{
         event::ResumedEvent,
     },
 };
+
+// This trait adds the `register_songbird` and `register_songbird_with` methods
+// to the client builder below, making it easy to install this voice client.
+// The voice client can be retrieved in any command using `songbird::get(ctx).await`.
+use songbird::SerenityInit;
 
 use tracing::{debug, error, info, instrument, Level};
 
@@ -34,6 +44,7 @@ use crate::commands::help::GENERAL_HELP;
 use crate::commands::general_group::GENERAL_GROUP;
 use crate::commands::server_mod_group::SERVERMOD_GROUP;
 use crate::commands::emoji_group::EMOJI_GROUP;
+use crate::commands::voice_group::VOICE_GROUP;
 
 
 pub struct ShardManagerContainer;
@@ -143,11 +154,13 @@ async fn main() {
             .help(&GENERAL_HELP)
             .group(&GENERAL_GROUP)
             .group(&EMOJI_GROUP)
-            .group(&SERVERMOD_GROUP);
+            .group(&SERVERMOD_GROUP)
+            .group(&VOICE_GROUP);
 
     let mut client = Client::builder(&token)
         .event_handler(Handler)
         .framework(framework)
+        .register_songbird()
         // For this example to run properly, the "Presence Intent" and "Server Members Intent"
         // options need to be enabled.
         // These are needed so the `required_permissions` macro works on the commands that need to
@@ -165,6 +178,7 @@ async fn main() {
 
     tokio::spawn(async move {
         tokio::signal::ctrl_c().await.expect("Could not register ctrl+c handler");
+        info!("Received Ctrl-C, shutting down.");
         shard_manager.lock().await.shutdown_all().await;
     });
 

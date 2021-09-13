@@ -8,17 +8,18 @@ edition = "2018"
 
 [dependencies.serenity]
 version = "0.10.9"
-features = ["client", "framework", "standard_framework", "rustls_backend", "cache" ]
+features = ["client", "framework", "standard_framework", "rustls_backend", "cache", "voice" ]
+
+[dependencies.songbird]
+version = "0.2.0"
+features = ["youtube-dlc"]
 
 [dependencies.tokio]
 version = "1.11.0"
 features = ["macros", "rt-multi-thread", "signal" ]
 
-[dependencies.tracing]
-version = "0.1.26"
-
-[dependencies.tracing-subscriber]
-version = "0.2.20"
-
-[dependencies.tracing-appender]
-version = "0.1.2"
+[dependencies]
+tracing = "0.1.26"
+tracing-subscriber = "0.2.21"
+tracing-appender = "0.1.2"
+url = "2.2.2"
