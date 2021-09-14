@@ -17,6 +17,7 @@ use crate::commands::checks::USER_IN_VOICE_WITH_BOT_OR_BOT_NOT_IN_ANY_VOICE_CHEC
 
 
 #[group]
+#[prefixes("voice")]
 #[commands(join, leave, play, deafen, undeafen, mute, unmute)]
 struct Voice;
 
@@ -42,7 +43,15 @@ async fn join(ctx: &Context, msg: &Message) -> CommandResult {
     let manager = songbird::get(ctx).await
         .expect("Songbird Voice client placed in at initialisation.").clone();
 
-    let _handler = manager.join(guild_id, connect_to).await;
+    let (_, handler) = manager.join(guild_id, connect_to).await;
+
+    match handler {
+        Err(why) => {
+            error!("Joining voice channel failed: {:?}", why);
+            check_msg(msg.reply(&ctx.http, "Joining voice channel failed, please try again.").await);
+        }
+        _ => {}
+    }
 
     Ok(())
 }

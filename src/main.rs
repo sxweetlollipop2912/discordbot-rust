@@ -1,7 +1,8 @@
 mod system_fn;
 mod commands;
 mod conf_constants;
-pub mod wrapper;
+mod wrapper;
+mod lavalink;
 
 use std::{
     collections::HashSet,
@@ -24,6 +25,7 @@ use serenity::{
     model::{
         gateway::Ready,
         event::ResumedEvent,
+        id::GuildId,
     },
 };
 
@@ -32,6 +34,8 @@ use serenity::{
 // The voice client can be retrieved in any command using `songbird::get(ctx).await`.
 use songbird::SerenityInit;
 
+use lavalink_rs::{gateway::*, model::*, LavalinkClient};
+
 use tracing::{debug, error, info, instrument, Level};
 
 use crate::system_fn::unknown_command;
@@ -39,12 +43,16 @@ use crate::system_fn::dispatch_error;
 use crate::system_fn::delay_action;
 use crate::system_fn::before;
 use crate::system_fn::after;
+use crate::lavalink::Lavalink;
+use crate::lavalink::LavalinkHandler;
 use crate::conf_constants::BOT_TOKEN;
+use crate::conf_constants::LAVALINK_PASS;
 use crate::commands::help::GENERAL_HELP;
 use crate::commands::general_group::GENERAL_GROUP;
 use crate::commands::server_mod_group::SERVERMOD_GROUP;
 use crate::commands::emoji_group::EMOJI_GROUP;
 use crate::commands::voice_group::VOICE_GROUP;
+use crate::commands::voicelavalink_group::VOICELAVALINK_GROUP;
 
 
 pub struct ShardManagerContainer;
@@ -77,6 +85,10 @@ impl EventHandler for Handler {
         // In this example, this will not show up in the logs because DEBUG is
         // below INFO, which is the set debug level.
         debug!("Resumed; trace: {:?}", resume.trace);
+    }
+
+    async fn cache_ready(&self, _: Context, guilds: Vec<GuildId>) {
+        info!("cache is ready!\n{:#?}", guilds);
     }
 }
 
@@ -155,7 +167,8 @@ async fn main() {
             .group(&GENERAL_GROUP)
             .group(&EMOJI_GROUP)
             .group(&SERVERMOD_GROUP)
-            .group(&VOICE_GROUP);
+            .group(&VOICE_GROUP)
+            .group(&VOICELAVALINK_GROUP);
 
     let mut client = Client::builder(&token)
         .event_handler(Handler)
@@ -169,9 +182,17 @@ async fn main() {
         .await
         .expect("Error creating client.");
 
+    let lava_client = LavalinkClient::builder(bot_id)
+        .set_host("127.0.0.1")
+        .set_password(LAVALINK_PASS)
+        .build(LavalinkHandler)
+        .await
+        .expect("Error creating Lavalink client.");
+
     {
         let mut data = client.data.write().await;
         data.insert::<ShardManagerContainer>(client.shard_manager.clone());
+        data.insert::<Lavalink>(lava_client);
     }
 
     let shard_manager = client.shard_manager.clone();

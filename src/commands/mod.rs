@@ -4,3 +4,4 @@ pub mod server_mod_group;
 pub mod emoji_group;
 pub mod voice_group;
 pub mod checks;
+pub mod voicelavalink_group;
