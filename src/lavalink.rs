@@ -1,29 +1,11 @@
-use std::env;
-
-use serenity::{
-    async_trait,
-    client::{Client, Context, EventHandler},
-    framework::{
-        standard::{
-            macros::{command, group, hook},
-            Args, CommandResult,
-        },
-        StandardFramework,
-    },
-    http::Http,
-    model::{channel::Message, gateway::Ready, id::GuildId, misc::Mentionable},
-    Result as SerenityResult,
-};
+use serenity::async_trait;
 
 use lavalink_rs::{gateway::*, model::*, LavalinkClient};
 use serenity::prelude::*;
-use songbird::SerenityInit;
 
 use tracing::{debug, error, info};
 
 use crate::wrapper::check_msg;
-use crate::commands::checks::USER_IN_VOICE_WITH_BOT_CHECK;
-use crate::commands::checks::USER_IN_VOICE_WITH_BOT_OR_BOT_NOT_IN_ANY_VOICE_CHECK;
 
 
 pub struct Lavalink;

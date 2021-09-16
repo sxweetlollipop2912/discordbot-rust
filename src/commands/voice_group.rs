@@ -1,22 +1,23 @@
 /// Music streaming utilizing Lavalink.
 use serenity::{
-    async_trait,
-    client::{Client, Context, EventHandler},
+    client::Context,
     framework::{
         standard::{
-            macros::{command, group, hook},
-            Args, CommandResult,
+            macros::{
+                command,
+                group,
+            },
+            Args,
+            CommandResult,
         },
-        StandardFramework,
     },
-    http::Http,
-    model::{channel::Message, gateway::Ready, id::GuildId, misc::Mentionable},
-    Result as SerenityResult,
+    model::channel::Message,
 };
 
-use lavalink_rs::{gateway::*, model::*, error::*, LavalinkClient};
-use serenity::prelude::*;
-use songbird::SerenityInit;
+use lavalink_rs::{
+    error::LavalinkResult,
+    LavalinkClient,
+};
 
 use tracing::{debug, error, info};
 

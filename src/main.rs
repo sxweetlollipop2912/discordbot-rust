@@ -13,7 +13,10 @@ use serenity::prelude::*;
 use serenity::{
     async_trait,
     client::{
-        bridge::gateway::{GatewayIntents, ShardManager},
+        bridge::gateway::{
+            GatewayIntents,
+            ShardManager,
+        },
         Client,
         EventHandler,
     },
@@ -34,7 +37,7 @@ use serenity::{
 // The voice client can be retrieved in any command using `songbird::get(ctx).await`.
 use songbird::SerenityInit;
 
-use lavalink_rs::{gateway::*, model::*, LavalinkClient};
+use lavalink_rs::LavalinkClient;
 
 use tracing::{debug, error, info, instrument, Level};
 
