@@ -51,8 +51,8 @@ use crate::commands::help::GENERAL_HELP;
 use crate::commands::general_group::GENERAL_GROUP;
 use crate::commands::server_mod_group::SERVERMOD_GROUP;
 use crate::commands::emoji_group::EMOJI_GROUP;
+use crate::commands::legacy_voice_group::LEGACYVOICE_GROUP;
 use crate::commands::voice_group::VOICE_GROUP;
-use crate::commands::voicelavalink_group::VOICELAVALINK_GROUP;
 
 
 pub struct ShardManagerContainer;
@@ -167,8 +167,8 @@ async fn main() {
             .group(&GENERAL_GROUP)
             .group(&EMOJI_GROUP)
             .group(&SERVERMOD_GROUP)
-            .group(&VOICE_GROUP)
-            .group(&VOICELAVALINK_GROUP);
+            //.group(&LEGACYVOICE_GROUP)
+            .group(&VOICE_GROUP);
 
     let mut client = Client::builder(&token)
         .event_handler(Handler)
