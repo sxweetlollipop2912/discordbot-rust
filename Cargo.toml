@@ -14,6 +14,11 @@ features = ["client", "framework", "standard_framework", "rustls_backend", "cach
 version = "0.2.0"
 features = ["youtube-dlc"]
 
+[dependencies.lavalink-rs]
+git = "https://gitlab.com/vicky5124/lavalink-rs/"
+branch = "master"
+features = ["serenity"]
+
 [dependencies.tokio]
 version = "1.11.0"
 features = ["macros", "rt-multi-thread", "signal" ]
