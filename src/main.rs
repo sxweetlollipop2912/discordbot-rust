@@ -72,6 +72,10 @@ impl EventHandler for Handler {
     /*async fn message(&self, ctx: Context, msg: Message) {
     }*/
 
+    async fn cache_ready(&self, _: Context, guilds: Vec<GuildId>) {
+        info!("cache is ready!\n{:#?}", guilds);
+    }
+
     async fn ready(&self, _: Context, ready: Ready) {
         // Log at the INFO level. This is a macro from the `tracing` crate.
         info!("{} is connected!", ready.user.name);
@@ -88,10 +92,6 @@ impl EventHandler for Handler {
         // In this example, this will not show up in the logs because DEBUG is
         // below INFO, which is the set debug level.
         debug!("Resumed; trace: {:?}", resume.trace);
-    }
-
-    async fn cache_ready(&self, _: Context, guilds: Vec<GuildId>) {
-        info!("cache is ready!\n{:#?}", guilds);
     }
 }
 

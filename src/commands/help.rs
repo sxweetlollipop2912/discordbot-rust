@@ -37,12 +37,9 @@ If you want more information about a specific command, just pass the command as 
 // When you use sub-groups, Serenity will use the `indention_prefix` to indicate
 // how deeply an item is indented.
 #[indention_prefix = "+"]
-// On another note, you can set up the help-menu-filter-behaviour.
-// First case is if a user lacks permissions for a command, we can hide the command.
+// On another note, you can set up the help-menu-filter-behaviour. "Nothing", "Hide", "Strike" are accepted.
 #[lacking_permissions = "Hide"]
-// If the user is nothing but lacking a certain role, we just display it hence our variant is `Nothing`.
 #[lacking_role = "Hide"]
-// The last `enum`-variant is `Strike`, which ~~strikes~~ a command.
 #[wrong_channel = "Strike"]
 // Serenity will automatically analyse and generate a hint/tip explaining the possible
 // cases of ~~strikethrough-commands~~, but only if

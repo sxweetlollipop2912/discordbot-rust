@@ -18,7 +18,7 @@ Cargo.lock
 # Files with personal/confidential infos
 conf_*
 
-# My Lavalink server
-/lavalink_server/
+# My Lavalink server's logs
+/lavalink_server/logs/
 
 .DS_Store
