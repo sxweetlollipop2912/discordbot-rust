@@ -122,6 +122,16 @@ async fn play(ctx: &Context, msg: &Message, args: Args) -> CommandResult {
     let manager = songbird::get(ctx).await
         .expect("Songbird Voice client placed in at initialisation.").clone();
 
+    // Attempt to join the user's current voice channel if not already in a channel.
+    if manager.get(guild_id).is_none() {
+        if let Err(why) = create_session_with_songbird_wrapper(ctx, msg, &lava_client).await {
+            error!("Creating session failed: {:?}", why);
+            check_msg(
+                msg.reply(&ctx, "Joining voice channel failed, please try again.").await);
+            return Ok(());
+        }
+    }
+
     if let Some(_handler) = manager.get(guild_id) {
         let query_information = lava_client.auto_search_tracks(&query).await?;
 
@@ -145,8 +155,8 @@ async fn play(ctx: &Context, msg: &Message, args: Args) -> CommandResult {
                         "Added to queue: {}",
                         query_information.tracks[0].info.as_ref().unwrap().title)).await);
     } else {
-        check_msg(msg.reply(&ctx.http,
-                    "Use `^join` first.").await);
+        check_msg(
+            msg.reply(&ctx, "U are not in a voice channel!").await);
     }
 
     Ok(())
@@ -206,7 +216,6 @@ async fn skip(ctx: &Context, msg: &Message) -> CommandResult {
 
     if queue_size == 0 {
         check_msg(msg.channel_id.say(&ctx.http, "Nothing to skip.").await);
-        return Ok(());
     }
 
     // Only use `skip` if there are more than 1 song in queue.
