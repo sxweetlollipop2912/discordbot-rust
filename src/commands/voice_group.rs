@@ -29,7 +29,7 @@ use crate::commands::checks::USER_IN_VOICE_WITH_BOT_OR_BOT_NOT_IN_ANY_VOICE_CHEC
 
 
 #[group]
-#[commands(join, leave, play, now_playing, skip, queue)]
+#[commands(join, leave, play, now_playing, skip, queue, mute, unmute, deafen, undeafen)]
 struct Voice;
 
 
@@ -84,16 +84,22 @@ async fn leave(ctx: &Context, msg: &Message) -> CommandResult {
     let has_handler = manager.get(guild_id).is_some();
 
     if has_handler {
-        if let Err(e) = manager.remove(guild_id).await {
-            check_msg(msg.reply(&ctx.http, "Leaving failed, please try again.").await);
-            error!("Leaving voice channel failed: {:?}", e);
+        {
+            let data = ctx.data.read().await;
+            let lava_client = data.get::<Lavalink>()
+                .expect("Unable to retrieve Lavalink client from data.").clone();
 
-            {
-                let data = ctx.data.read().await;
-                let lava_client = data.get::<Lavalink>()
-                    .expect("Unable to retrieve Lavalink client from data.").clone();
-                lava_client.destroy(guild_id).await?;
+            if let Err(why) = lava_client.destroy(guild_id).await {
+                error!("Destroying audio failed: {:?}", why);
+                check_msg(msg.reply(&ctx.http,
+                                    "Leaving failed, please try again.").await);
+                return Ok(());
             }
+        }
+
+        if let Err(why) = manager.remove(guild_id).await {
+            check_msg(msg.reply(&ctx.http, "Leaving failed, please try again.").await);
+            error!("Leaving voice channel failed: {:?}", why);
         }
     } else {
             check_msg(msg.reply(ctx, "I'm not in a voice channel!").await);
@@ -122,6 +128,16 @@ async fn play(ctx: &Context, msg: &Message, args: Args) -> CommandResult {
     let manager = songbird::get(ctx).await
         .expect("Songbird Voice client placed in at initialisation.").clone();
 
+    // Attempt to join the user's current voice channel if not already in a channel.
+    if manager.get(guild_id).is_none() {
+        if let Err(why) = create_session_with_songbird_wrapper(ctx, msg, &lava_client).await {
+            error!("Creating session failed: {:?}", why);
+            check_msg(
+                msg.reply(&ctx, "Joining voice channel failed, please try again.").await);
+            return Ok(());
+        }
+    }
+
     if let Some(_handler) = manager.get(guild_id) {
         let query_information = lava_client.auto_search_tracks(&query).await?;
 
@@ -145,8 +161,8 @@ async fn play(ctx: &Context, msg: &Message, args: Args) -> CommandResult {
                         "Added to queue: {}",
                         query_information.tracks[0].info.as_ref().unwrap().title)).await);
     } else {
-        check_msg(msg.reply(&ctx.http,
-                    "Use `^join` first.").await);
+        check_msg(
+            msg.reply(&ctx, "U are not in a voice channel!").await);
     }
 
     Ok(())
@@ -206,11 +222,10 @@ async fn skip(ctx: &Context, msg: &Message) -> CommandResult {
 
     if queue_size == 0 {
         check_msg(msg.channel_id.say(&ctx.http, "Nothing to skip.").await);
-        return Ok(());
     }
 
     // Only use `skip` if there are more than 1 song in queue.
-    if queue_size > 1 {
+    else if queue_size > 1 {
         if let Some(_track) = lava_client.skip(guild_id).await {
             check_msg(msg.reply(&ctx.http,
                                 format!("Skipped: {}", track_title)).await);
@@ -224,7 +239,7 @@ async fn skip(ctx: &Context, msg: &Message) -> CommandResult {
 
     // If there is only 1 song in queue, use `destroy` instead, then `create_session` again.
     // We can't use `stop`, as it would not remove the song from queue.
-    // Perhaps we can use `stop` and manually remove the song?
+    // Perhaps we can use `stop` and manually remove the song, as running `create_session` would be more expensive?
     else if queue_size == 1 {
         if let Err(why) = lava_client.destroy(guild_id).await {
             error!("Destroying audio failed: {:?}", why);
@@ -234,7 +249,7 @@ async fn skip(ctx: &Context, msg: &Message) -> CommandResult {
         if let Err(why) = create_session_with_songbird_wrapper(ctx, msg, &lava_client).await {
             error!("Creating session with songbird failed: {:?}", why);
             check_msg(msg.reply(&ctx.http,
-                                "Skipping failed, please try again.").await);
+                                "An error has occurred, please have me rejoin the channel.").await);
         }
 
         check_msg(msg.reply(&ctx.http,
@@ -260,6 +275,134 @@ async fn queue(ctx: &Context, msg: &Message) -> CommandResult {
         check_msg(msg.reply(&ctx.http,
                             format!("There are **{}** songs currently in queue.", node.queue.len())).await);
     }
+    Ok(())
+}
+
+
+#[command]
+#[only_in(guilds)]
+#[checks(user_in_voice_with_bot)]
+async fn mute(ctx: &Context, msg: &Message) -> CommandResult {
+    let guild = msg.guild(&ctx.cache).await.unwrap();
+    let guild_id = guild.id;
+
+    let manager = songbird::get(ctx).await
+        .expect("Songbird Voice client placed in at initialisation.").clone();
+
+    let handler_lock = match manager.get(guild_id) {
+        Some(handler) => handler,
+        None => {
+            check_msg(msg.reply(ctx, "I'm not in a voice channel!").await);
+
+            return Ok(());
+        },
+    };
+
+    let mut handler = handler_lock.lock().await;
+
+    if !handler.is_mute() {
+        if let Err(e) = handler.mute(true).await {
+            check_msg(msg.reply(&ctx.http, "Muting failed, please try again.").await);
+            error!("Muting voice failed: {:?}", e);
+        }
+    }
+
+    Ok(())
+}
+
+
+#[command]
+#[only_in(guilds)]
+#[checks(user_in_voice_with_bot)]
+async fn unmute(ctx: &Context, msg: &Message) -> CommandResult {
+    let guild = msg.guild(&ctx.cache).await.unwrap();
+    let guild_id = guild.id;
+
+    let manager = songbird::get(ctx).await
+        .expect("Songbird Voice client placed in at initialisation.").clone();
+
+    let handler_lock = match manager.get(guild_id) {
+        Some(handler) => handler,
+        None => {
+            check_msg(msg.reply(ctx, "I'm not in a voice channel!").await);
+
+            return Ok(());
+        },
+    };
+
+    let mut handler = handler_lock.lock().await;
+
+    if handler.is_mute() {
+        if let Err(e) = handler.mute(false).await {
+            check_msg(msg.reply(&ctx.http, "Unmuting failed, please try again.").await);
+            error!("Unmuting failed: {:?}", e);
+        }
+    }
+
+    Ok(())
+}
+
+
+#[command]
+#[only_in(guilds)]
+#[checks(user_in_voice_with_bot)]
+async fn deafen(ctx: &Context, msg: &Message) -> CommandResult {
+    let guild = msg.guild(&ctx.cache).await.unwrap();
+    let guild_id = guild.id;
+
+    let manager = songbird::get(ctx).await
+        .expect("Songbird Voice client placed in at initialisation.").clone();
+
+    let handler_lock = match manager.get(guild_id) {
+        Some(handler) => handler,
+        None => {
+            check_msg(msg.reply(ctx, "I'm not in a voice channel!").await);
+
+            return Ok(());
+        },
+    };
+
+    let mut handler = handler_lock.lock().await;
+
+    if !handler.is_deaf() {
+        if let Err(e) = handler.deafen(true).await {
+            check_msg(msg.reply(&ctx.http, "Failed to deafen voice, please try again.").await);
+            error!("Deafening voice failed: {:?}", e);
+        }
+    }
+
+    Ok(())
+}
+
+
+#[command]
+#[only_in(guilds)]
+#[checks(user_in_voice_with_bot)]
+async fn undeafen(ctx: &Context, msg: &Message) -> CommandResult {
+    let guild = msg.guild(&ctx.cache).await.unwrap();
+    let guild_id = guild.id;
+
+    let manager = songbird::get(ctx).await
+        .expect("Songbird Voice client placed in at initialisation.").clone();
+
+    let handler_lock = match manager.get(guild_id) {
+        Some(handler) => handler,
+        None => {
+            check_msg(msg.reply(ctx, "I'm not in a voice channel!").await);
+
+            return Ok(());
+        },
+    };
+
+    let mut handler = handler_lock.lock().await;
+
+    if handler.is_deaf() {
+        if let Err(e) = handler.deafen(false).await {
+            check_msg(msg.reply(&ctx.http, "Undeafening failed, please try again.").await);
+            error!("Undeafening failed: {:?}", e);
+        }
+    }
+
     Ok(())
 }
 
