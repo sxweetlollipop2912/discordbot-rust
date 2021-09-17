@@ -84,16 +84,22 @@ async fn leave(ctx: &Context, msg: &Message) -> CommandResult {
     let has_handler = manager.get(guild_id).is_some();
 
     if has_handler {
-        if let Err(e) = manager.remove(guild_id).await {
-            check_msg(msg.reply(&ctx.http, "Leaving failed, please try again.").await);
-            error!("Leaving voice channel failed: {:?}", e);
+        {
+            let data = ctx.data.read().await;
+            let lava_client = data.get::<Lavalink>()
+                .expect("Unable to retrieve Lavalink client from data.").clone();
 
-            {
-                let data = ctx.data.read().await;
-                let lava_client = data.get::<Lavalink>()
-                    .expect("Unable to retrieve Lavalink client from data.").clone();
-                lava_client.destroy(guild_id).await?;
+            if let Err(why) = lava_client.destroy(guild_id).await {
+                error!("Destroying audio failed: {:?}", why);
+                check_msg(msg.reply(&ctx.http,
+                                    "Leaving failed, please try again.").await);
+                return Ok(());
             }
+        }
+
+        if let Err(why) = manager.remove(guild_id).await {
+            check_msg(msg.reply(&ctx.http, "Leaving failed, please try again.").await);
+            error!("Leaving voice channel failed: {:?}", why);
         }
     } else {
             check_msg(msg.reply(ctx, "I'm not in a voice channel!").await);
