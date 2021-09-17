@@ -168,8 +168,8 @@ async fn main() {
             // #name is turned all uppercase
             .help(&GENERAL_HELP)
             .group(&GENERAL_GROUP)
-            .group(&EMOJI_GROUP)
-            .group(&SERVERMOD_GROUP)
+            //.group(&EMOJI_GROUP)
+            //.group(&SERVERMOD_GROUP)
             //.group(&LEGACYVOICE_GROUP)
             .group(&VOICE_GROUP);
 

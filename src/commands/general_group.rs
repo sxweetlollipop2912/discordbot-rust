@@ -25,13 +25,14 @@ use crate::wrapper::check_msg;
 #[description = "A group of general commands."]
 // Summary only appears when listing multiple groups.
 #[summary = "Trivial commands."]
-#[commands(about, am_i_admin, repeat, ping, some_long_command, upper_command)]
+//#[commands(about, am_i_admin, repeat, ping, some_long_command, upper_command)]
+#[commands(about, repeat, ping)]
 struct General;
 
 
 #[command]
 async fn about(ctx: &Context, msg: &Message) -> CommandResult {
-    check_msg(msg.channel_id.say(&ctx.http, "This is a small test-bot! : )").await);
+    check_msg(msg.channel_id.say(&ctx.http, "Hi, I am a multipurpose bot! : )").await);
     Ok(())
 }
 
