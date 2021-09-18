@@ -26,13 +26,10 @@ FROM debian:buster-slim
 
 # install OpenJDK-11
 RUN apt-get update && \
-#    apt-get install -y openjdk-11-jre-headless && \
     apt-get install -y openjdk-11-jre-headless && \
     apt-get clean;
 
 # install ffmpeg
-RUN apt-get -y update
-RUN apt-get -y upgrade
 RUN apt-get install -y ffmpeg
 
 # copy the build artifact from the build stage
