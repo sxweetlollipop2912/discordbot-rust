@@ -10,6 +10,7 @@ lavalink:
       soundcloud: true
       twitch: true
       vimeo: true
+      mixer: true
       http: true
       local: false
     bufferDurationMs: 400
@@ -39,8 +40,8 @@ sentry:
 
 logging:
   file:
-    max-history: 30
-    max-size: 1GB
+    max-history: 5
+      max-size: 5MB
   path: ./logs/
 
   level:
