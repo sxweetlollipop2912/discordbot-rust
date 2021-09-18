@@ -7,6 +7,9 @@ mod lavalink;
 use std::{
     collections::HashSet,
     sync::Arc,
+    process::Command,
+    thread,
+    time::Duration,
 };
 
 use serenity::prelude::*;
@@ -78,6 +81,7 @@ impl EventHandler for Handler {
 
     async fn ready(&self, _: Context, ready: Ready) {
         // Log at the INFO level. This is a macro from the `tracing` crate.
+        println!("{} is connected!", ready.user.name);
         info!("{} is connected!", ready.user.name);
     }
 
@@ -107,6 +111,15 @@ async fn main() {
         .with_writer(non_blocking)
         .with_max_level(Level::INFO)
         .init();
+
+    // Running Lavalink server
+    let mut lava_server_handle = Command::new("java")
+                .current_dir("./lavalink_server/")
+                .arg("-jar")
+                .arg("Lavalink.jar")
+                .spawn()
+                .expect("Running Lavalink server failed.");
+    thread::sleep(Duration::from_secs(60));
 
     // Token is stored in ./src/conf_constants.rs, under `BOT_TOKEN` constant string
     let token = BOT_TOKEN;
@@ -209,4 +222,7 @@ async fn main() {
     if let Err(why) = client.start().await {
         error!("Client error: {:?}", why);
     }
+
+    // Shut down Lavalink server
+    lava_server_handle.kill().expect("Shutting down Lavalink server failed.");
 }

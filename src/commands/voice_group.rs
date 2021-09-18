@@ -212,7 +212,7 @@ async fn skip(ctx: &Context, msg: &Message) -> CommandResult {
     let mut queue_size = 0;
 
     // We must seperate the use of `node` from `lava_client.skip()` and `lava_client.destroy()` functions
-    // because both use lava_client, and doing otherwise would block.
+    // because both use lava_client, therefore doing otherwise would block.
     if let Some(node) = lava_client.nodes().await.get(&guild_id.0) {
         queue_size = node.queue.len();
         if !node.queue.is_empty() {
@@ -238,8 +238,8 @@ async fn skip(ctx: &Context, msg: &Message) -> CommandResult {
     }
 
     // If there is only 1 song in queue, use `destroy` instead, then `create_session` again.
-    // We can't use `stop`, as it would not remove the song from queue.
-    // Perhaps we can use `stop` and manually remove the song, as running `create_session` would be more expensive?
+    // We cannot use `stop`, as it would not remove the song from queue.
+    // Perhaps we can use `stop` and manually remove the song, as running `create_session` is more expensive?
     else if queue_size == 1 {
         if let Err(why) = lava_client.destroy(guild_id).await {
             error!("Destroying audio failed: {:?}", why);
@@ -301,9 +301,9 @@ async fn mute(ctx: &Context, msg: &Message) -> CommandResult {
     let mut handler = handler_lock.lock().await;
 
     if !handler.is_mute() {
-        if let Err(e) = handler.mute(true).await {
+        if let Err(why) = handler.mute(true).await {
             check_msg(msg.reply(&ctx.http, "Muting failed, please try again.").await);
-            error!("Muting voice failed: {:?}", e);
+            error!("Muting voice failed: {:?}", why);
         }
     }
 
@@ -333,9 +333,9 @@ async fn unmute(ctx: &Context, msg: &Message) -> CommandResult {
     let mut handler = handler_lock.lock().await;
 
     if handler.is_mute() {
-        if let Err(e) = handler.mute(false).await {
+        if let Err(why) = handler.mute(false).await {
             check_msg(msg.reply(&ctx.http, "Unmuting failed, please try again.").await);
-            error!("Unmuting failed: {:?}", e);
+            error!("Unmuting failed: {:?}", why);
         }
     }
 
@@ -365,9 +365,9 @@ async fn deafen(ctx: &Context, msg: &Message) -> CommandResult {
     let mut handler = handler_lock.lock().await;
 
     if !handler.is_deaf() {
-        if let Err(e) = handler.deafen(true).await {
+        if let Err(why) = handler.deafen(true).await {
             check_msg(msg.reply(&ctx.http, "Failed to deafen voice, please try again.").await);
-            error!("Deafening voice failed: {:?}", e);
+            error!("Deafening voice failed: {:?}", why);
         }
     }
 
@@ -397,9 +397,9 @@ async fn undeafen(ctx: &Context, msg: &Message) -> CommandResult {
     let mut handler = handler_lock.lock().await;
 
     if handler.is_deaf() {
-        if let Err(e) = handler.deafen(false).await {
+        if let Err(why) = handler.deafen(false).await {
             check_msg(msg.reply(&ctx.http, "Undeafening failed, please try again.").await);
-            error!("Undeafening failed: {:?}", e);
+            error!("Undeafening failed: {:?}", why);
         }
     }
 
