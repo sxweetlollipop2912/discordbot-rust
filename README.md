@@ -8,3 +8,5 @@ One exception being that `Lavalink` server in `local_lavalink_server branch` is 
 It is preferable to host bot online (on Heroku, for instance) using `main branch` version, as it would consume much less RAM than this one.
 <br>
 If stable connection and smooth experience is prioritized, go for this version.
+<br><br>
+Besides Rust, Java (see more on [Lavalink Github repository](https://github.com/freyacodes/Lavalink)) and NodeJS is also required.
