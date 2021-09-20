@@ -5,6 +5,7 @@ mod wrapper;
 mod lavalink;
 
 use std::{
+    env,
     collections::HashSet,
     sync::Arc,
     process::Command,
@@ -53,6 +54,7 @@ use crate::lavalink::Lavalink;
 use crate::lavalink::LavalinkHandler;
 use crate::conf_constants::BOT_TOKEN;
 use crate::conf_constants::LAVALINK_PASS;
+use crate::conf_constants::LAVALINK_PORT;
 use crate::commands::help::GENERAL_HELP;
 use crate::commands::general_group::GENERAL_GROUP;
 use crate::commands::server_mod_group::SERVERMOD_GROUP;
@@ -112,14 +114,16 @@ async fn main() {
         .with_max_level(Level::INFO)
         .init();
 
+    // Setting up Lavalink server
+    env::set_var("PASS", LAVALINK_PASS);
+
     // Running Lavalink server
-    let mut lava_server_handle = Command::new("java")
+    let mut lava_server_handle = Command::new("node")
                 .current_dir("./lavalink_server/")
-                .arg("-jar")
-                .arg("Lavalink.jar")
+                .arg("bootstrap.js")
                 .spawn()
                 .expect("Running Lavalink server failed.");
-    thread::sleep(Duration::from_secs(60));
+    thread::sleep(Duration::from_secs(90));
 
     // Token is stored in ./src/conf_constants.rs, under `BOT_TOKEN` constant string
     let token = BOT_TOKEN;
@@ -190,7 +194,7 @@ async fn main() {
         .event_handler(Handler)
         .framework(framework)
         .register_songbird()
-        // For this example to run properly, the "Presence Intent" and "Server Members Intent"
+        // For this to run properly, the "Presence Intent" and "Server Members Intent"
         // options need to be enabled.
         // These are needed so the `required_permissions` macro works on the commands that need to
         // use it.
@@ -199,8 +203,8 @@ async fn main() {
         .expect("Error creating client.");
 
     let lava_client = LavalinkClient::builder(bot_id)
-        .set_host("127.0.0.1")
-        .set_password(LAVALINK_PASS)
+        .set_port(env::var("PORT").unwrap_or_else(|_| LAVALINK_PORT.to_string()).parse::<u16>().unwrap())
+        .set_password(env::var("PASS").unwrap_or_else(|_| LAVALINK_PASS.to_string()))
         .build(LavalinkHandler)
         .await
         .expect("Error creating Lavalink client.");

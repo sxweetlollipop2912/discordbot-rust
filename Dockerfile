@@ -32,6 +32,9 @@ RUN apt-get update && \
 # install ffmpeg
 RUN apt-get install -y ffmpeg
 
+# install node
+RUN apt-get install -y nodejs
+
 # copy the build artifact from the build stage
 COPY --from=build /discordbot-rust/target/release/discordbot-rust ./
 
