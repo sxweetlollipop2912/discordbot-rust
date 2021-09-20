@@ -108,7 +108,7 @@ async fn main() {
     // Create a non-blocking rolling file-appender.
     let file_appender = tracing_appender::rolling::daily("./logs", "log");
     let (non_blocking, _guard) = tracing_appender::non_blocking(file_appender);
-    // Call tracing_subscriber's initialize function, which configures `tracing` via environment variables.
+    // Call tracing_subscriber's initialize function.
     tracing_subscriber::fmt()
         .with_writer(non_blocking)
         .with_max_level(Level::INFO)
