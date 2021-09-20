@@ -52,7 +52,6 @@ use crate::system_fn::after;
 use crate::lavalink::Lavalink;
 use crate::lavalink::LavalinkHandler;
 use crate::conf_constants::BOT_TOKEN;
-use crate::conf_constants::LAVALINK_PASS;
 use crate::commands::help::GENERAL_HELP;
 use crate::commands::general_group::GENERAL_GROUP;
 use crate::commands::server_mod_group::SERVERMOD_GROUP;
@@ -104,22 +103,12 @@ impl EventHandler for Handler {
 #[instrument(name = "main")]
 async fn main() {
     // Create a non-blocking rolling file-appender.
-    let file_appender = tracing_appender::rolling::daily("./logs", "log");
-    let (non_blocking, _guard) = tracing_appender::non_blocking(file_appender);
-    // Call tracing_subscriber's initialize function, which configures `tracing` via environment variables.
+    let (non_blocking, _guard) = tracing_appender::non_blocking(std::io::stdout());
+    // Call tracing_subscriber's initialize function.
     tracing_subscriber::fmt()
         .with_writer(non_blocking)
         .with_max_level(Level::INFO)
         .init();
-
-    // Running Lavalink server
-    let mut lava_server_handle = Command::new("java")
-                .current_dir("./lavalink_server/")
-                .arg("-jar")
-                .arg("Lavalink.jar")
-                .spawn()
-                .expect("Running Lavalink server failed.");
-    thread::sleep(Duration::from_secs(60));
 
     // Token is stored in ./src/conf_constants.rs, under `BOT_TOKEN` constant string
     let token = BOT_TOKEN;
@@ -199,8 +188,9 @@ async fn main() {
         .expect("Error creating client.");
 
     let lava_client = LavalinkClient::builder(bot_id)
-        .set_host("127.0.0.1")
-        .set_password(LAVALINK_PASS)
+        .set_host("lava.link")
+        .set_port(80)
+        .set_password("anything as a password")
         .build(LavalinkHandler)
         .await
         .expect("Error creating Lavalink client.");
@@ -222,7 +212,4 @@ async fn main() {
     if let Err(why) = client.start().await {
         error!("Client error: {:?}", why);
     }
-
-    // Shut down Lavalink server
-    lava_server_handle.kill().expect("Shutting down Lavalink server failed.");
 }

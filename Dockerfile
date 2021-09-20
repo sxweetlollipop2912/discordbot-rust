@@ -36,7 +36,6 @@ RUN apt-get install -y ffmpeg
 COPY --from=build /discordbot-rust/target/release/discordbot-rust ./
 
 # copy necessary files
-COPY ./lavalink_server ./lavalink_server
 COPY ./youtube-dlc.exe ./
 
 # set the startup command to run your binary
