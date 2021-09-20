@@ -24,13 +24,10 @@ RUN cargo build --release
 # our final base
 FROM debian:buster-slim
 
-# install OpenJDK-11
-RUN apt-get update && \
-    apt-get install -y openjdk-11-jre-headless && \
-    apt-get clean;
-
 # install ffmpeg
+RUN apt-get update
 RUN apt-get install -y ffmpeg
+RUN apt-get clean
 
 # copy the build artifact from the build stage
 COPY --from=build /discordbot-rust/target/release/discordbot-rust ./

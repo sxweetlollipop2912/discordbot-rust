@@ -9,8 +9,6 @@ It is preferable to host bot online (on Heroku, for instance) using `online_lava
 <br>
 If stable connection and smooth experience is prioritized, go for `local_lavalink_server branch` version.
 <br><br>
-Besides Rust, Java (see more on [Lavalink Github repository](https://github.com/freyacodes/Lavalink)) is also required.
-<br><br>
 The bot is pretty much incomplete. Only very basic commands are available. However, if one wishes to try this bot out, one can do so by having one's own server and following this [invitation link](https://discord.com/api/oauth2/authorize?client_id=884998336690659348&permissions=140697234512&scope=bot).
 <br>
 Obviously, I have no intention of tracking any personal data. Feel free to enjoy ;)
