@@ -1,3 +1,5 @@
+Every file in this folder, except for `.gitignore` and `README.md`, is credited to [karyeet / heroku-lavalink repository](https://github.com/karyeet/heroku-lavalink).
+
 ### *Lavalink server is downloaded and run by `bootstrap.js` script, which is also automatically run by `main.rs`.*
 Therefore, it is also required that nodejs is installed.<br><br><br>
 Otherwise, one can run it ***manually***:
