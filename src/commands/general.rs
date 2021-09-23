@@ -19,17 +19,6 @@ use tracing::{debug, error, info};
 use crate::wrapper::check_msg;
 
 
-#[group]
-// Set a description to appear if a user wants to display a single group
-// e.g. via help using the group-name or one of its prefixes.
-#[description = "A group of general commands."]
-// Summary only appears when listing multiple groups.
-#[summary = "Trivial commands."]
-//#[commands(about, am_i_admin, repeat, ping, some_long_command, upper_command)]
-#[commands(about, repeat, ping)]
-struct General;
-
-
 #[command]
 async fn about(ctx: &Context, msg: &Message) -> CommandResult {
     check_msg(msg.channel_id.say(&ctx.http, "Hi, I am a multipurpose bot! : )").await);

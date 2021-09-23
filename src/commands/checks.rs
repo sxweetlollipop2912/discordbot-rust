@@ -33,14 +33,25 @@ pub async fn user_in_voice_with_bot_check(
 
     let handler = handler_lock.lock().await;
 
-    if let Some(bot_channel_id) = handler.current_channel() {
-        if let Some(author_channel_id) = guild
-            .voice_states.get(&msg.author.id)
-            .and_then(|voice_state| voice_state.channel_id) {
+    match handler.current_channel() {
+        Some(bot_channel_id) => {
+            match guild
+                .voice_states.get(&msg.author.id)
+                .and_then(|voice_state| voice_state.channel_id) {
 
-            if bot_channel_id.0 != author_channel_id.0 {
-                return Err(Reason::User("Checking InVoiceWithBot failed, user not in the same voice channel with bot.".to_string()));
+                Some(author_channel_id) => {
+                    if bot_channel_id.0 != author_channel_id.0 {
+                        return Err(Reason::User("Checking InVoiceWithBot failed, user not in the same voice channel with bot.".to_string()));
+                    }
+                }
+                None => {
+                    return Err(Reason::User("Checking InVoiceWithBot failed, user is not in a voice channel.".to_string()));
+                }
             }
+        }
+
+        None => {
+            return Err(Reason::User("Checking InVoiceWithBot failed, bot is not in a voice channel.".to_string()));
         }
     }
 
@@ -72,12 +83,17 @@ pub async fn user_in_voice_with_bot_or_bot_not_in_any_voice_check(
     let handler = handler_lock.lock().await;
 
     if let Some(bot_channel_id) = handler.current_channel() {
-        if let Some(author_channel_id) = guild
+        match guild
             .voice_states.get(&msg.author.id)
             .and_then(|voice_state| voice_state.channel_id) {
 
-            if bot_channel_id.0 != author_channel_id.0 {
-                return Err(Reason::User("Checking InVoiceWithBot failed, user not in the same voice channel with bot.".to_string()));
+            Some(author_channel_id) => {
+                if bot_channel_id.0 != author_channel_id.0 {
+                    return Err(Reason::User("Checking InVoiceWithBot failed, user not in the same voice channel with bot.".to_string()));
+                }
+            }
+            None => {
+                return Err(Reason::User("Checking InVoiceWithBot failed, user is not in a voice channel.".to_string()));
             }
         }
     }

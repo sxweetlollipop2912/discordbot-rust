@@ -24,13 +24,10 @@ RUN cargo build --release
 # our final base
 FROM debian:buster-slim
 
-# install OpenJDK-11
-RUN apt-get update && \
-    apt-get install -y openjdk-11-jre-headless && \
-    apt-get clean;
-
 # install ffmpeg
+RUN apt-get update
 RUN apt-get install -y ffmpeg
+RUN apt-get clean
 
 # install node
 RUN apt-get install -y nodejs
@@ -39,7 +36,6 @@ RUN apt-get install -y nodejs
 COPY --from=build /discordbot-rust/target/release/discordbot-rust ./
 
 # copy necessary files
-COPY ./lavalink_server ./lavalink_server
 COPY ./youtube-dlc.exe ./
 
 # set the startup command to run your binary

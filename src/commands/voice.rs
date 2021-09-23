@@ -27,12 +27,6 @@ use crate::commands::checks::USER_IN_VOICE_WITH_BOT_CHECK;
 use crate::commands::checks::USER_IN_VOICE_WITH_BOT_OR_BOT_NOT_IN_ANY_VOICE_CHECK;
 
 
-
-#[group]
-#[commands(join, leave, play, now_playing, skip, queue, mute, unmute, deafen, undeafen)]
-struct Voice;
-
-
 #[command]
 #[only_in(guilds)]
 async fn join(ctx: &Context, msg: &Message) -> CommandResult {
@@ -71,6 +65,7 @@ async fn join(ctx: &Context, msg: &Message) -> CommandResult {
 
     Ok(())
 }
+
 
 #[command]
 #[only_in(guilds)]
@@ -157,6 +152,7 @@ async fn play(ctx: &Context, msg: &Message, args: Args) -> CommandResult {
 
             return Ok(());
         };
+        info!("Added to queue: {}, guild: {}", query_information.tracks[0].info.as_ref().unwrap().title, guild_id.0);
         check_msg(msg.reply(&ctx.http, format!(
                         "Added to queue: {}",
                         query_information.tracks[0].info.as_ref().unwrap().title)).await);

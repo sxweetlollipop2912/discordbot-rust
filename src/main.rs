@@ -3,6 +3,7 @@ mod commands;
 mod conf_constants;
 mod wrapper;
 mod lavalink;
+mod constants;
 
 use std::{
     env,
@@ -55,12 +56,13 @@ use crate::lavalink::LavalinkHandler;
 use crate::conf_constants::BOT_TOKEN;
 use crate::conf_constants::LAVALINK_PASS;
 use crate::conf_constants::LAVALINK_PORT;
+use crate::constants::COMMAND_PREFIX;
 use crate::commands::help::GENERAL_HELP;
-use crate::commands::general_group::GENERAL_GROUP;
-use crate::commands::server_mod_group::SERVERMOD_GROUP;
-use crate::commands::emoji_group::EMOJI_GROUP;
-use crate::commands::legacy_voice_group::LEGACYVOICE_GROUP;
-use crate::commands::voice_group::VOICE_GROUP;
+use crate::commands::GENERAL_GROUP;
+use crate::commands::SERVERMOD_GROUP;
+use crate::commands::EMOJI_GROUP;
+use crate::commands::LEGACYVOICE_GROUP;
+use crate::commands::VOICE_GROUP;
 
 
 pub struct ShardManagerContainer;
@@ -82,7 +84,6 @@ impl EventHandler for Handler {
     }
 
     async fn ready(&self, _: Context, ready: Ready) {
-        // Log at the INFO level. This is a macro from the `tracing` crate.
         println!("{} is connected!", ready.user.name);
         info!("{} is connected!", ready.user.name);
     }
@@ -93,10 +94,6 @@ impl EventHandler for Handler {
     // Context doesn't implement Debug either, so it is also skipped.
     #[instrument(skip(self, _ctx))]
     async fn resume(&self, _ctx: Context, resume: ResumedEvent) {
-        // Log at the DEBUG level.
-        //
-        // In this example, this will not show up in the logs because DEBUG is
-        // below INFO, which is the set debug level.
         debug!("Resumed; trace: {:?}", resume.trace);
     }
 }
@@ -149,7 +146,7 @@ async fn main() {
         .configure(|c| c
             .with_whitespace(true)
             .on_mention(Some(bot_id))
-            .prefix("^")
+            .prefix(COMMAND_PREFIX)
             // Sets the bot's owners. These will be used for commands that
             // are owners only.
             .owners(bot_owners))
