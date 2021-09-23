@@ -1,0 +1,1 @@
+pub const COMMAND_PREFIX: &'static str = "^";

@@ -17,15 +17,9 @@ use crate::commands::checks::USER_IN_VOICE_WITH_BOT_CHECK;
 use crate::commands::checks::USER_IN_VOICE_WITH_BOT_OR_BOT_NOT_IN_ANY_VOICE_CHECK;
 
 
-#[group]
-#[prefixes("voice")]
-#[commands(join, leave, play, deafen, undeafen, mute, unmute)]
-struct LegacyVoice;
-
-
 #[command]
 #[only_in(guilds)]
-async fn join(ctx: &Context, msg: &Message) -> CommandResult {
+async fn legacy_join(ctx: &Context, msg: &Message) -> CommandResult {
     let guild = msg.guild(&ctx.cache).await.unwrap();
     let guild_id = guild.id;
 
@@ -61,7 +55,7 @@ async fn join(ctx: &Context, msg: &Message) -> CommandResult {
 #[command]
 #[only_in(guilds)]
 #[checks(user_in_voice_with_bot)]
-async fn leave(ctx: &Context, msg: &Message) -> CommandResult {
+async fn legacy_leave(ctx: &Context, msg: &Message) -> CommandResult {
     let guild = msg.guild(&ctx.cache).await.unwrap();
     let guild_id = guild.id;
 
@@ -85,7 +79,7 @@ async fn leave(ctx: &Context, msg: &Message) -> CommandResult {
 #[command]
 #[only_in(guilds)]
 #[checks(user_in_voice_with_bot_or_bot_not_in_any_voice)]
-async fn play(ctx: &Context, msg: &Message, mut args: Args) -> CommandResult {
+async fn legacy_play(ctx: &Context, msg: &Message, mut args: Args) -> CommandResult {
     let url = match args.single::<String>() {
         Ok(url) => url,
         Err(_) => {
@@ -151,7 +145,7 @@ async fn play(ctx: &Context, msg: &Message, mut args: Args) -> CommandResult {
 #[command]
 #[only_in(guilds)]
 #[checks(user_in_voice_with_bot)]
-async fn mute(ctx: &Context, msg: &Message) -> CommandResult {
+async fn legacy_mute(ctx: &Context, msg: &Message) -> CommandResult {
     let guild = msg.guild(&ctx.cache).await.unwrap();
     let guild_id = guild.id;
 
@@ -183,7 +177,7 @@ async fn mute(ctx: &Context, msg: &Message) -> CommandResult {
 #[command]
 #[only_in(guilds)]
 #[checks(user_in_voice_with_bot)]
-async fn unmute(ctx: &Context, msg: &Message) -> CommandResult {
+async fn legacy_unmute(ctx: &Context, msg: &Message) -> CommandResult {
     let guild = msg.guild(&ctx.cache).await.unwrap();
     let guild_id = guild.id;
 
@@ -215,7 +209,7 @@ async fn unmute(ctx: &Context, msg: &Message) -> CommandResult {
 #[command]
 #[only_in(guilds)]
 #[checks(user_in_voice_with_bot)]
-async fn deafen(ctx: &Context, msg: &Message) -> CommandResult {
+async fn legacy_deafen(ctx: &Context, msg: &Message) -> CommandResult {
     let guild = msg.guild(&ctx.cache).await.unwrap();
     let guild_id = guild.id;
 
@@ -247,7 +241,7 @@ async fn deafen(ctx: &Context, msg: &Message) -> CommandResult {
 #[command]
 #[only_in(guilds)]
 #[checks(user_in_voice_with_bot)]
-async fn undeafen(ctx: &Context, msg: &Message) -> CommandResult {
+async fn legacy_undeafen(ctx: &Context, msg: &Message) -> CommandResult {
     let guild = msg.guild(&ctx.cache).await.unwrap();
     let guild_id = guild.id;
 

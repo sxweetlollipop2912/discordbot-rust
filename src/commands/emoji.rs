@@ -17,21 +17,6 @@ use tracing::{debug, error, info};
 use crate::wrapper::check_msg;
 
 
-#[group]
-// This requires us to call commands in this group
-// via `~emoji` (or `~em`) instead of just `~`.
-#[prefixes("emoji", "em")]
-// Set a description to appear if a user wants to display a single group
-// e.g. via help using the group-name or one of its prefixes.
-#[description = "A group of commands providing an emoji as response."]
-// Summary only appears when listing multiple groups.
-#[summary = "Do emoji fun!"]
-// Sets a command that will be executed if only a group-prefix was passed.
-#[default_command(bird)]
-#[commands(cat, dog)]
-struct Emoji;
-
-
 #[command]
 async fn bird(ctx: &Context, msg: &Message, args: Args) -> CommandResult {
     let say_content = if args.is_empty() {
