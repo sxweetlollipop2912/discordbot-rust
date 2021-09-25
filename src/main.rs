@@ -8,9 +8,6 @@ mod constants;
 use std::{
     collections::HashSet,
     sync::Arc,
-    process::Command,
-    thread,
-    time::Duration,
 };
 
 use serenity::prelude::*;
