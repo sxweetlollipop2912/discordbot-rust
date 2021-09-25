@@ -12,20 +12,14 @@ pub use play::*;
 pub mod skip;
 pub use skip::*;
 
-#[command]
-#[only_in(guilds)]
-#[checks(user_in_voice_with_bot)]
-async fn deafen(ctx: &Context, msg: &Message) -> CommandResult {
-    let guild = msg.guild(&ctx.cache).await.unwrap();
-    let guild_id = guild.id;
+pub mod loop_song;
+pub use loop_song::*;
 
-    let manager = songbird::get(ctx).await
-        .expect("Songbird Voice client placed in at initialisation.").clone();
+pub mod unloop_song;
+pub use unloop_song::*;
 
-    let handler_lock = match manager.get(guild_id) {
-        Some(handler) => handler,
-        None => {
-            check_msg(msg.reply(ctx, "I'm not in a voice channel!").await);
+pub mod is_looping;
+pub use is_looping::*;
 
 pub mod now_playing;
 pub use now_playing::*;
