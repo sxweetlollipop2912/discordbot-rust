@@ -1,14 +1,6 @@
 use serenity::{
-    client::{
-        Context,
-    },
     framework::standard::{
-        macros::{command, group},
-        Args,
-        CommandResult,
-    },
-    model::{
-        channel::Message,
+        macros::group,
     },
 };
 
@@ -35,7 +27,7 @@ pub use voice::*;
 #[group]
 #[description = "A group of audio streaming commands."]
 #[summary = "🎵!"]
-#[commands(join, leave, play, now_playing, skip, queue, mute, unmute, deafen, undeafen)]
+#[commands(join, leave, play, now_playing, skip, loop_song, unloop_song, is_looping, queue, mute, unmute, deafen, undeafen)]
 struct Voice;
 
 

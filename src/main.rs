@@ -9,9 +9,6 @@ use std::{
     env,
     collections::HashSet,
     sync::Arc,
-    process::Command,
-    thread,
-    time::Duration,
 };
 
 use serenity::prelude::*;
