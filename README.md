@@ -1,4 +1,5 @@
 # discordbot-rust
+### Broken! And I'm too ~~lazy~~ occupied with school these days.
 `online_lavalink_server branch` is dedicated for [SomethingHost `Lavalink` server](https://support.something.host/en/article/lavalink-hosting-okm26z/) version.
 <br><br>
 In other words, this version is basically the same as `local_lavalink_server branch`, and will be updated along with in future commits.
