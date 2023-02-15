@@ -1,5 +1,5 @@
 # discordbot-rust
-### Broken thx to Discord API upgrades.
+### Broken thx to Discord API upgrades. And I'm too ~~lazy~~ occupied with school these days.
 `online_lavalink_server` branch uses [SomethingHost Lavalink server](https://support.something.host/en/article/lavalink-hosting-okm26z/).
 <br>
 `local_lavalink_server` branch runs Lavalink server locally.
