@@ -1,11 +1,9 @@
 # discordbot-rust
-`local_lavalink_server branch` is dedicated for self-sufficient `Lavalink` server version.
-<br><br>In other words, this version is basically the same as `online_lavalink_server branch`, and will be updated along with in future commits.
+### Broken thx to Discord API upgrades. And I'm too ~~lazy~~ occupied with school these days.
+`online_lavalink_server` branch uses [SomethingHost Lavalink server](https://support.something.host/en/article/lavalink-hosting-okm26z/).
 <br>
-One exception being that `Lavalink` server in `local branch` is run locally, while `online branch` uses free online [`Lavalink` server](https://support.something.host/en/article/lavalink-hosting-okm26z/), credited to [SomethingHost](https://something.host).
+`local_lavalink_server` branch runs Lavalink server locally.
 <br><br>
-It is preferable to host bot online (on Heroku, for instance) using `online_lavalink_server branch` version, as it would consume much less RAM than `local branch`.
+`online` branch consumes much less RAM than `local` branch, preferred when hosting online.
 <br>
-If stable connection and smooth experience is prioritized, go for `local_lavalink_server branch` version.
-<br><br>
-Besides Rust, Java (see more on [Lavalink Github repository](https://github.com/freyacodes/Lavalink)) and NodeJS is also required.
+If stable connection and smooth experience is prioritized, choose `local` branch.
